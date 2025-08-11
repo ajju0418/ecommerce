@@ -2,11 +2,16 @@
   <!-- Stats Cards -->
   <div class="stats-grid">
     <div *ngFor="let stat of stats" class="stat-card">
-      <div class="stat-icon">{{ stat.icon }}</div>
+      <div class="stat-icon" [ngClass]="stat.color">{{ stat.icon }}</div>
       <div class="stat-content">
         <h3 class="stat-title">{{ stat.title }}</h3>
         <p class="stat-value">{{ stat.value }}</p>
-        <span class="stat-change positive">{{ stat.change }}</span>
+        <span class="stat-change" [ngClass]="{
+          'positive': stat.change.startsWith('+'),
+          'negative': stat.change.startsWith('-')
+        }">
+          {{ stat.change }}
+        </span>
       </div>
     </div>
   </div>
@@ -17,7 +22,7 @@
     <div class="data-card">
       <div class="card-header">
         <h3>Recent Orders</h3>
-        <button class="view-all-btn">View All</button>
+       
       </div>
       <div class="table-container">
         <table class="data-table">
@@ -31,7 +36,7 @@
             </tr>
           </thead>
           <tbody>
-            <tr *ngFor="let order of recentOrders">
+            <tr *ngFor="let order of recentOrders.slice(0, 3)">
               <td>{{ order.id }}</td>
               <td>{{ order.customer }}</td>
               <td>{{ order.product }}</td>
@@ -51,7 +56,7 @@
     <div class="data-card">
       <div class="card-header">
         <h3>Top Products</h3>
-        <button class="view-all-btn">View All</button>
+        
       </div>
       <div class="table-container">
         <table class="data-table">

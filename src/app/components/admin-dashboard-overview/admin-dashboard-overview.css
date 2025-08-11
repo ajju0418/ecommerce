@@ -38,7 +38,7 @@
 .stat-card {
   background: white;
   border-radius: 15px;
-  padding: 25px;
+  padding: 20px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
   border: 1px solid #f0f0f0;
   display: flex;
@@ -54,10 +54,10 @@
 }
 
 .stat-icon {
-  font-size: 2.5rem;
-  margin-right: 20px;
-  width: 60px;
-  height: 60px;
+  font-size: 2.2rem;
+  margin-right: 16px;
+  width: 45px;
+  height: 45px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -67,14 +67,14 @@
 }
 
 .stat-content {
-  flex: 1;
+  flex:1;
 }
 
 .stat-title {
   font-family: 'Inter', sans-serif;
   font-size: 0.9rem;
   color: #6b7280;
-  margin: 0 0 8px 0;
+  margin: 0 0 6px 0;
   font-weight: 500;
   text-transform: uppercase;
   letter-spacing: 0.05em;
@@ -90,7 +90,7 @@
 }
 
 .stat-change {
-  font-size: 0.8rem;
+  font-size: 0.75rem;
   font-weight: 600;
   padding: 4px 8px;
   border-radius: 20px;
@@ -100,6 +100,11 @@
 .stat-change.positive {
   background: #dcfce7;
   color: #166534;
+}
+
+.stat-change.negative {
+  background: #fee2e2;
+  color: #991b1b;
 }
 
 /* Data Grid */
@@ -112,7 +117,7 @@
 .data-card {
   background: white;
   border-radius: 15px;
-  padding: 25px;
+  padding: 16px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
   border: 1px solid #f0f0f0;
 }
@@ -121,7 +126,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 20px;
+  margin-bottom: 16px;
 }
 
 .card-header h3 {
@@ -137,9 +142,9 @@
   background: linear-gradient(135deg, #222b45 0%, #3f3b3b 100%);
   color: white;
   border: none;
-  padding: 8px 16px;
+  padding: 6px 12px;
   border-radius: 8px;
-  font-size: 0.85rem;
+  font-size: 0.8rem;
   font-weight: 500;
   cursor: pointer;
   transition: transform 0.2s ease;
@@ -161,19 +166,19 @@
 
 .data-table th {
   background: #f9fafb;
-  padding: 12px 15px;
+  padding: 10px 12px;
   text-align: left;
   font-weight: 600;
   color: #374151;
-  font-size: 0.85rem;
+  font-size: 0.8rem;
   border-bottom: 1px solid #e5e7eb;
 }
 
 .data-table td {
-  padding: 12px 15px;
+  padding: 10px 12px;
   border-bottom: 1px solid #f3f4f6;
   color: #6b7280;
-  font-size: 0.9rem;
+  font-size: 0.8rem;
 }
 
 .data-table tbody tr:hover {
@@ -182,11 +187,18 @@
 
 /* Status Badges */
 .status-badge {
-  padding: 4px 12px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 100px;
+  height: 28px;
+  padding: 0 12px;
   border-radius: 20px;
   font-size: 0.75rem;
   font-weight: 600;
   text-transform: capitalize;
+  white-space: nowrap;
+  text-align: center;
 }
 
 .status-delivered {
@@ -243,7 +255,7 @@
     min-width: 100%;
     padding: 20px;
   }
-  
+
   .data-grid {
     grid-template-columns: 1fr;
   }
