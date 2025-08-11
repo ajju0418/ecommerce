@@ -1,3 +1,6 @@
+/* Import Premium Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap');
+
 .admin-customers {
   padding: 20px;
 }
@@ -10,10 +13,12 @@
 }
 
 .customers-header h2 {
-  font-size: 1.8rem;
+  font-family: 'Playfair Display', serif;
+  font-size: 2.2rem;
   font-weight: 600;
   color: #1f2937;
   margin: 0;
+  letter-spacing: -0.02em;
 }
 
 .add-customer-btn {
@@ -122,53 +127,140 @@
 .actions-btn {
   background: none;
   border: none;
-  font-size: 1.5rem;
   color: #6b7280;
   cursor: pointer;
-  padding: 0 8px;
-  border-radius: 50%;
-  transition: background 0.2s ease;
+  padding: 8px;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
 }
 
 .actions-btn:hover {
-  background: #f3f4f6;
+  background: #f8fafc;
+  color: #374151;
+  transform: scale(1.05);
+}
+
+.actions-btn svg {
+  transition: transform 0.2s ease;
+}
+
+.actions-btn:hover svg {
+  transform: scale(1.1);
 }
 
 .actions-menu {
   position: absolute;
   right: 0;
-  top: 30px;
-  background: white;
-  border: 1px solid #e5e7eb;
-  border-radius: 10px;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.08);
-  min-width: 160px;
+  top: 40px;
+  background: rgba(255, 255, 255, 0.95);
+  border: 1px solid rgba(229, 231, 235, 0.8);
+  border-radius: 16px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15), 0 8px 30px rgba(0, 0, 0, 0.1);
+  min-width: 200px;
   z-index: 10;
   display: flex;
   flex-direction: column;
-  padding: 8px 0;
+  padding: 12px 0;
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(229, 231, 235, 0.6);
+  animation: slideInUp 0.2s ease-out;
+  transform-origin: top right;
+}
+
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(-10px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
 }
 
 .actions-menu button {
   background: none;
   border: none;
   color: #374151;
-  font-size: 0.95rem;
+  font-size: 0.9rem;
   text-align: left;
-  padding: 10px 20px;
+  padding: 12px 20px;
   cursor: pointer;
-  transition: background 0.2s;
+  transition: all 0.2s ease;
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 12px;
+  width: 100%;
+  font-family: 'Inter', sans-serif;
+  font-weight: 500;
 }
 
-.actions-menu button:hover {
-  background: #f3f4f6;
+.action-item {
+  position: relative;
+  overflow: hidden;
 }
 
-.actions-menu .delete {
+.action-item::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  width: 0;
+  background: linear-gradient(90deg, rgba(248, 250, 252, 0.8) 0%, rgba(226, 232, 240, 0.6) 100%);
+  transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: -1;
+}
+
+.action-item:hover::before {
+  width: 100%;
+}
+
+.action-item:hover {
+  color: #1f2937;
+  transform: translateX(4px);
+  font-weight: 600;
+}
+
+.action-item span {
+  transition: all 0.2s ease;
+}
+
+.action-item:hover span {
+  transform: translateX(2px);
+}
+
+.action-item svg {
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.action-item:hover svg {
+  transform: scale(1.1);
+}
+
+.action-item.view:hover svg {
+  color: #3b82f6;
+}
+
+.action-item.edit:hover svg {
+  color: #10b981;
+}
+
+.action-item.delete:hover svg {
   color: #ef4444;
+}
+
+.actions-divider {
+  height: 1px;
+  background: linear-gradient(90deg, transparent 0%, rgba(229, 231, 235, 0.6) 20%, rgba(229, 231, 235, 0.8) 50%, rgba(229, 231, 235, 0.6) 80%, transparent 100%);
+  margin: 8px 20px;
+  border-radius: 1px;
 }
 
 @media (max-width: 768px) {
@@ -182,5 +274,40 @@
   }
   .customers-table th, .customers-table td {
     padding: 10px 8px;
+  }
+  
+  .customers-header h2 {
+    font-size: 1.6rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .admin-customers {
+    padding: 15px;
+  }
+  
+  .customers-header h2 {
+    font-size: 1.4rem;
+  }
+  
+  .customers-table th, .customers-table td {
+    padding: 8px 6px;
+    font-size: 0.8rem;
+  }
+  
+  .actions-menu {
+    min-width: 160px;
+    right: -10px;
+  }
+  
+  .action-item {
+    padding: 10px 16px;
+    font-size: 0.85rem;
+  }
+  
+  .actions-btn {
+    width: 32px;
+    height: 32px;
+    padding: 6px;
   }
 }
