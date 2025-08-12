@@ -25,7 +25,8 @@ import { Adminlogin } from './components/adminlogin/adminlogin';
 
 export const routes: Routes = [
     { path: "home", component: Home },
-    { path: "", redirectTo: "home", pathMatch: "full" },
+    { path: "login-page", component: LoginPage },
+    { path: "", redirectTo: "login-page", pathMatch: "full" },
     { path: "home/cart", component: CartComponent },
     // Admin shell layout with child routes
     { path: 'admin', component: AdminDashboard, children: [
@@ -44,7 +45,7 @@ export const routes: Routes = [
     { path: "deals-of-the-day", component: DealsOfTheDay },
     { path: "sale", component: Sale },
     { path: "user-profile", component: UserProfileComponent },
-    { path: "login-page", component: LoginPage }, 
+
     { path: "contact-us", component: ContactUs },
     { path: "adminlogin", component: Adminlogin},
     { path: "**", component: NotFound }

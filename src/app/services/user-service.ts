@@ -14,6 +14,14 @@ export class UserService {
       phone: "1234567890",
       gender: "male",
       password: "kishan123",
+    },
+    {
+      id: 2,
+      username: "bhargav",
+      email: "bhargav@gmail.com",
+      phone: "1234567890",
+      gender: "male",
+      password: "bhargav",
     }
 
   ];

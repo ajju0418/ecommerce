@@ -2,19 +2,20 @@
   <div class="max-w-screen-2xl mx-auto px-4 py-4 flex items-center justify-between">
 
     <!-- Logo + Store Name -->
+     
     <div class="flex items-center space-x-2">
       <i class="bi bi-bag-check-fill text-gray-800 text-2xl"></i>
       <a routerLink="/home" class="text-3xl font-bold text-gray-900 tracking-wide">MyStore</a>
     </div>
 
     <!-- Navigation (Home & Landing Page) -->
-    <nav *ngIf="router.url === '/home' || router.url === '/login-page'" class="hidden md:block">
+    <nav *ngIf="router.url === '/home'" class="hidden md:block">
       <ul class="flex space-x-8 text-base font-medium">
         <li><a [routerLink]="['/new-arrivals']" class="hover:text-black transition-all duration-200">New Arrivals</a></li>
         <li><a [routerLink]="['/sale']" class="hover:text-black transition-all duration-200">Sale</a></li>
         <li><a [routerLink]="['/deals-of-the-day']" class="hover:text-black transition-all duration-200">Deal of the Day</a></li>
         <li><a [routerLink]="['/aboutus']" class="hover:text-black transition-all duration-200">About Us</a></li>
-        <li><a [routerLink]="['/contactus']" class="hover:text-black transition-all duration-200">Contact Us</a></li>
+        <li><a [routerLink]="['/contact-us']" class="hover:text-black transition-all duration-200">Contact Us</a></li>
       </ul>
     </nav>
 
@@ -66,17 +67,28 @@
         </ng-container>
 
         <!-- Show Greeting only if user is logged in and not on Landing Page -->
-        <ng-container *ngIf="currentUser && router.url !== '/login-page'">
+        <!-- <ng-container *ngIf="currentUser && router.url !== '/login-page'">
           <span class="hover:text-black transition-colors duration-200 text-base font-medium text-gray-800">Hi, {{ currentUser.username }}</span>
-        </ng-container>
+        </ng-container> -->
 
         <!-- Show Login/Register only on non-landing pages -->
-        <ng-container *ngIf="router.url === '/home'">
+        <!-- <ng-container *ngIf="router.url === '/home'">
           <a class="hover:text-black transition-colors duration-200" routerLink="/login-page">Login</a>
           <span>/</span>
           <a class="hover:text-black transition-colors duration-200" routerLink="/register">Register</a>
-        </ng-container>
-
+        </ng-container> -->
+        <div *ngIf="router.url == '/home'">
+        <div class="flex space-x-2 items-center text-base font-medium text-gray-800">
+          <ng-container *ngIf="currentUser; else guestLinks">
+            <span class="hover:text-black transition-colors duration-200">Hi, {{ currentUser.username }}</span>
+          </ng-container>
+          <ng-template #guestLinks>
+            <a class="hover:text-black transition-colors duration-200" routerLink="/login">Login</a>
+            <span>/</span>
+            <a class="hover:text-black transition-colors duration-200" routerLink="/register">Register</a>
+          </ng-template>
+        </div>
+        </div>
         <!-- Hide Cart and Profile icons on Landing Page -->
         <ng-container *ngIf="router.url !== '/login-page'">
           <a [routerLink]="['/home/cart']" class="hover:text-black transition-colors duration-200 mt-1">

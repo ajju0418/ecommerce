@@ -1,62 +1,104 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { ProductListItem } from '../models/product.types';
+import { OrderService } from './order-service';
+import { AdminSyncService } from './admin-sync.service';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root'
 })
 export class cartService {
+  private initialCartItems: ProductListItem[] = [];
+  private cartItemsSubject = new BehaviorSubject<ProductListItem[]>(this.initialCartItems);
+  cartItems$: Observable<ProductListItem[]> = this.cartItemsSubject.asObservable();
 
-  private initialCartItems: ProductListItem[] = [
-//     { id: '1', name: 'IPhone 16 Pro Max', price: 50000, imageUrl: 'https://tse3.mm.bing.net/th?q=iPhone+16+Front+View&w=120&h=120&c=1&rs=1&qlt=70&o=7&cb=1&dpr=1.5&pid=InlineBlock&rm=3&mkt=en-IN&cc=IN&setlang=en&adlt=strict&t=1&mw=247', rating: 4.5, collection: 'New Arrivals', type: 'Mobiles', gender: 'Unisex', quantity: 1 },
-//     { id: '2', name: 'T-shirt', price: 1500, imageUrl: 'https://tse4.mm.bing.net/th/id/OIP.WzaBde0DiN6DGTjaZyQkogHaHa?w=198&h=198&c=7&r=0&o=5&dpr=1.5&pid=1.7', rating: 3.5, collection: 'Best Seller', type: 'T-Shirts', gender: 'Men', quantity: 1 },
-//     { id: '3', name: 'Cargo Jeans', price: 2500, imageUrl: 'https://tse3.mm.bing.net/th/id/OIP.nbaOhFm_5z1g-bgb3TsqQAHaJ3?w=202&h=269&c=7&r=0&o=5&dpr=1.5&pid=1.7', rating: 4.1, collection: 'Sale', type: 'Trousers', gender: 'Men', quantity: 1 },
-//     { id: '4', name: 'Trousers For Men', price: 1000, imageUrl: 'https://tse1.mm.bing.net/th/id/OIP.cek1h3W6DuGHxdgz-B6qjgAAAA?w=158&h=197&c=7&r=0&o=5&dpr=1.5&pid=1.7', rating: 4.0, collection: 'Best Seller', type: 'Trousers', gender: 'Men', quantity: 1},
- ];
+  constructor(
+    private orderService: OrderService,
+    private adminSyncService: AdminSyncService
+  ) {
+    this.loadCartFromStorage();
+  }
 
-  private cartItemsSubject = new BehaviorSubject<ProductListItem[]>(this.initialCartItems);
+  private loadCartFromStorage(): void {
+    const storedCart = localStorage.getItem('cart');
+    if (storedCart) {
+      this.cartItemsSubject.next(JSON.parse(storedCart));
+    }
+  }
 
-  cartItems$: Observable<ProductListItem[]> = this.cartItemsSubject.asObservable();
+  private saveCartToStorage(): void {
+    localStorage.setItem('cart', JSON.stringify(this.cartItemsSubject.value));
+  }
 
-  constructor() { }
+  addToCart(product: ProductListItem): void {
+    const currentItems = this.cartItemsSubject.value;
+    const existingItem = currentItems.find(item => item.id === product.id);
 
-  addToCart(product: ProductListItem): void {
-    const currentItems = this.cartItemsSubject.value;
-    const existingItem = currentItems.find(item => item.id === product.id);
+    if (existingItem) {
+      existingItem.quantity = (existingItem.quantity || 0) + 1;
+    } else {
+      const newItem = { ...product, quantity: 1 };
+      currentItems.push(newItem);
+    }
 
-    if (existingItem) {
-      existingItem.quantity = (existingItem.quantity || 0) + 1;
-    } else {
-      const newItem = { ...product, quantity: 1 };
-      currentItems.push(newItem);
-    }
+    this.cartItemsSubject.next([...currentItems]);
+    this.saveCartToStorage();
 
-    this.cartItemsSubject.next([...currentItems]);
-  }
+    // Sync with admin
+    this.adminSyncService.syncProducts(currentItems);
+  }
 
-  getCartItems(): ProductListItem[] {
-    return this.cartItemsSubject.value;
-  }
+  getCartItems(): ProductListItem[] {
+    return this.cartItemsSubject.value;
+  }
 
-  updateQuantity(index: number, change: number): void {
-    const currentItems = this.cartItemsSubject.value;
-    const item = currentItems[index];
+  updateQuantity(index: number, change: number): void {
+    const currentItems = this.cartItemsSubject.value;
+    const item = currentItems[index];
 
-    const newQuantity = (item.quantity ?? 0) + change;
+    const newQuantity = (item.quantity ?? 0) + change;
     item.quantity = newQuantity;
 
-    if (item.quantity < 1) item.quantity = 1;
+    if (item.quantity < 1) item.quantity = 1;
 
-    this.cartItemsSubject.next([...currentItems]);
-  }
+    this.cartItemsSubject.next([...currentItems]);
+    this.saveCartToStorage();
+    this.adminSyncService.syncProducts(currentItems);
+  }
 
-  removeItem(index: number): void {
-    const currentItems = this.cartItemsSubject.value;
-    currentItems.splice(index, 1);
-    this.cartItemsSubject.next([...currentItems]);
-  }
+  removeItem(index: number): void {
+    const currentItems = this.cartItemsSubject.value;
+    currentItems.splice(index, 1);
+    this.cartItemsSubject.next([...currentItems]);
+    this.saveCartToStorage();
+    this.adminSyncService.syncProducts(currentItems);
+  }
 
-  getTotalPrice(): number {
-    return this.cartItemsSubject.value.reduce((total, item) => total + item.price * (item.quantity || 1), 0);
-  }
+  getTotalPrice(): number {
+    return this.cartItemsSubject.value.reduce((total, item) => total + item.price * (item.quantity || 1), 0);
+  }
+
+  checkout(customerInfo: any): string {
+    const items = this.cartItemsSubject.value;
+    const totalAmount = this.getTotalPrice();
+
+    if (items.length === 0) {
+      throw new Error('Cart is empty');
+    }
+
+    const order = this.orderService.createOrder(items, totalAmount, customerInfo);
+    this.clearCart();
+
+    return order.id;
+  }
+
+  clearCart(): void {
+    this.cartItemsSubject.next([]);
+    this.saveCartToStorage();
+    this.adminSyncService.syncProducts([]);
+  }
+
+  redirectToAdmin(orderId: string): void {
+    this.adminSyncService.redirectToAdmin(orderId);
+  }
 }

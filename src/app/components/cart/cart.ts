@@ -1,7 +1,10 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
 import { cartService } from '../../services/cart-Service';
+import { OrderService } from '../../services/order-service';
+import { AdminSyncService } from '../../services/admin-sync.service';
 import { Header } from "../header/header";
 import { Footer } from "../footer/footer";
 import { ProductListItem } from '../../models/product.types';
@@ -20,15 +23,21 @@ export class CartComponent implements OnInit, OnDestroy {
   couponCode: string = '';
   appliedDiscount: number = 0;
   totalAmount: number = 0;
+  customerName: string = '';
+  customerEmail: string = '';
+  customerPhone: string = '';
+  showCheckoutForm: boolean = false;
 
-  // 🐛 FIX: Declare cartSubscription as a class property, not a constructor parameter.
   cartSubscription!: Subscription;
 
-  // 🐛 FIX: Remove Subscription from the constructor
-  constructor(private cartService: cartService) { }
+  constructor(
+    private cartService: cartService,
+    private orderService: OrderService,
+    private adminSyncService: AdminSyncService,
+    private router: Router
+  ) { }
 
   ngOnInit(): void {
-    // 🐛 FIX: Assign the subscription result to the class property.
     this.cartSubscription = this.cartService.cartItems$.subscribe(items => {
       this.cartItems = items;
       this.calculateTotal();
@@ -36,7 +45,6 @@ export class CartComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    // Unsubscribe to prevent memory leaks when the component is destroyed.
     if (this.cartSubscription) {
       this.cartSubscription.unsubscribe();
     }
@@ -103,11 +111,73 @@ export class CartComponent implements OnInit, OnDestroy {
     alert(`${item.name} has been saved for later.`);
   }
 
+  toggleCheckoutForm(): void {
+    this.showCheckoutForm = !this.showCheckoutForm;
+  }
+
+  checkout(): void {
+    if (this.cartItems.length === 0) {
+      alert('Your cart is empty!');
+      return;
+    }
+
+    if (!this.customerName || !this.customerEmail || !this.customerPhone) {
+      alert('Please fill in all customer details!');
+      return;
+    }
+
+    const customerInfo = {
+      name: this.customerName,
+      email: this.customerEmail,
+      phone: this.customerPhone
+    };
+
+    try {
+      const orderId = this.cartService.checkout(customerInfo);
+      alert(`Order placed successfully! Order ID: ${orderId}`);
+
+      // Redirect to admin dashboard
+      this.cartService.redirectToAdmin(orderId);
+
+      this.showCheckoutForm = false;
+    } catch (error) {
+      alert('Error placing order: ' + (error as Error).message);
+    }
+  }
+
+  viewOrderInAdmin(): void {
+    if (this.cartItems.length === 0) {
+      alert('Your cart is empty!');
+      return;
+    }
+
+    // Create a temporary order for viewing in admin
+    const customerInfo = {
+      name: 'Guest User',
+      email: 'guest@example.com',
+      phone: '0000000000'
+    };
+
+    const orderId = this.cartService.checkout(customerInfo);
+    this.cartService.redirectToAdmin(orderId);
+  }
+
   payNow(): void {
     if (this.cartItems.length === 0) {
       alert('Your cart is empty!');
       return;
     }
-    alert(`Payment successful! You paid ₹${this.totalAmount.toFixed(2)}. Thank you!`);
+
+    this.toggleCheckoutForm();
+  }
+
+  proceedToCheckout(): void {
+    if (this.cartItems.length === 0) {
+      alert('Your cart is empty!');
+      return;
+    }
+
+    // Show payment success alert with amount
+    alert(`Payment successful! Amount: ₹${this.totalAmount.toFixed(2)}`);
   }
 }

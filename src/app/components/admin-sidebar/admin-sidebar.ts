@@ -19,7 +19,7 @@ export class AdminSidebar {
     { id: 'products', label: 'Product List', icon: 'products', route: '/admin/products' },
     { id: 'sales', label: 'Sales', icon: 'sales', route: '/admin/sales' },
     { id: 'customers', label: 'Customers', icon: 'customers', route: '/admin/customers' },
-    { id: 'logout', label: 'Log out', icon: 'logout', route: '/home' }
+    { id: 'logout', label: 'Log out', icon: 'logout', route: '/login' }
   ];
 
   isActive(route: string): boolean {

@@ -1,13 +1,13 @@
 <div class="admin-sidebar">
   <div class="sidebar-header">
-    <h2 class="logo">Admin Panel</h2>
+    <h2 class="logo"><i class="bi bi-bag-check-fill text-gray-800 text-2xl"></i> Admin Panel</h2>
   </div>
-  
+
   <nav class="sidebar-nav">
     <ul class="nav-menu">
       <li *ngFor="let item of menuItems" class="nav-item">
-        <button 
-          class="nav-link" 
+        <button
+          class="nav-link"
           [class.active]="isActive(item.route)"
           (click)="onMenuItemClick(item.id)"
           [routerLink]="item.route">
@@ -38,6 +38,6 @@
       </li>
     </ul>
   </nav>
-  
+
 
 </div>
